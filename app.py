@@ -153,9 +153,27 @@ def analisar():
 
         suspeito = False
         melhor_resultado = None
+        risco = 0
+        nivel_risco = "Baixo"
+        cor_risco = "#22c55e"  # verde
 
         if resultados:
             melhor_resultado = resultados[0]
+
+            menor_distancia = melhor_resultado["menor_distancia"]
+
+            risco = max(0, min(100, int((1 - (menor_distancia / 8)) * 100)))
+
+            if risco >= 70:
+                nivel_risco = "Alto"
+                cor_risco = "#ef4444"  # vermelho
+            elif risco >= 40:
+                nivel_risco = "Médio"
+                cor_risco = "#f59e0b"  # amarelo/laranja
+            else:
+                nivel_risco = "Baixo"
+                cor_risco = "#22c55e"  # verde
+
             if melhor_resultado["total_matches"] >= 1 and melhor_resultado["menor_distancia"] <= 8:
                 suspeito = True
 
@@ -163,7 +181,10 @@ def analisar():
             "resultado.html",
             suspeito=suspeito,
             resultados=resultados[:10],
-            melhor_resultado=melhor_resultado
+            melhor_resultado=melhor_resultado,
+            risco=risco,
+            nivel_risco=nivel_risco,
+            cor_risco=cor_risco
         )
 
     except Exception as erro:

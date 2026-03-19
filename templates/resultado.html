@@ -6,37 +6,83 @@
     <title>Resultado da Análise</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="container">
+<body class="resultado-page">
 
-        <h1>Resultado da Análise</h1>
+    <div class="background-blur background-blur-1"></div>
+    <div class="background-blur background-blur-2"></div>
 
-        {% if suspeito %}
-            <h2 class="suspeito">⚠️ GIF suspeito</h2>
-        {% else %}
-            <h2 class="nao-suspeito">✅ GIF não suspeito</h2>
-        {% endif %}
+    <main class="resultado-container fade-up">
 
-        <hr>
+        <header class="hero">
+            <p class="hero-badge">Sistema de Detecção de GIFs</p>
+            <h1>Resultado da Análise</h1>
 
-        {% if melhor_resultado %}
-            <section class="bloco">
-                <h3>Melhor correspondência encontrada</h3>
-                <p><strong>Nome:</strong> {{ melhor_resultado.nome }}</p>
-                <p><strong>Menor distância:</strong> {{ melhor_resultado.menor_distancia }}</p>
-                <p><strong>Total de matches:</strong> {{ melhor_resultado.total_matches }}</p>
-            </section>
-        {% endif %}
+            {% if suspeito %}
+                <div class="status-pill status-danger pulse">
+                    <span class="status-icon">⚠️</span>
+                    <span>GIF suspeito</span>
+                </div>
+            {% else %}
+                <div class="status-pill status-success pulse">
+                    <span class="status-icon">✅</span>
+                    <span>GIF não suspeito</span>
+                </div>
+            {% endif %}
+        </header>
+
+        <section class="glass-card info-card fade-delay-1">
+            {% if melhor_resultado %}
+                <h2>Melhor correspondência encontrada</h2>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Nome</span>
+                        <span class="info-value">{{ melhor_resultado.nome }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Menor distância</span>
+                        <span class="info-value">{{ melhor_resultado.menor_distancia }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Total de matches</span>
+                        <span class="info-value">{{ melhor_resultado.total_matches }}</span>
+                    </div>
+
+                    {% if melhor_resultado.porcentagem is defined %}
+                    <div class="info-item destaque">
+                        <span class="info-label">Similaridade</span>
+                        <span class="info-value">{{ melhor_resultado.porcentagem }}%</span>
+                    </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🔎</div>
+                    <h2>Nenhum resultado encontrado</h2>
+                    <p>Nenhuma correspondência foi localizada na base cadastrada.</p>
+                </div>
+            {% endif %}
+        </section>
 
         {% if resultados %}
-            <section class="bloco">
-                <h3>Top resultados encontrados</h3>
-                <table>
+        <section class="glass-card table-card fade-delay-2">
+            <div class="section-header">
+                <h2>Top resultados encontrados</h2>
+                <span class="section-badge">{{ resultados|length }} resultado(s)</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="modern-table">
                     <thead>
                         <tr>
                             <th>Nome</th>
                             <th>Menor distância</th>
                             <th>Total de matches</th>
+                            {% if resultados[0].porcentagem is defined %}
+                            <th>Porcentagem</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -45,19 +91,26 @@
                             <td>{{ item.nome }}</td>
                             <td>{{ item.menor_distancia }}</td>
                             <td>{{ item.total_matches }}</td>
+                            {% if item.porcentagem is defined %}
+                            <td>
+                                <span class="table-pill">
+                                    {{ item.porcentagem }}%
+                                </span>
+                            </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </section>
-        {% else %}
-            <section class="bloco">
-                <p>Nenhum resultado foi encontrado na base cadastrada.</p>
-            </section>
+            </div>
+        </section>
         {% endif %}
 
-        <a href="/">⬅ Voltar para a página inicial</a>
+        <div class="actions fade-delay-3">
+            <a href="/" class="btn-voltar">← Voltar para a página inicial</a>
+        </div>
 
-    </div>
+    </main>
+
 </body>
 </html>

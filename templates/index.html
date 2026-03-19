@@ -6,58 +6,55 @@
     <title>Sistema de Triagem de GIFs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="container">
+<body class="resultado-page">
 
-        <h1>Sistema de Triagem de GIFs</h1>
+    <main class="resultado-container fade-up">
 
-        <p>Total de referências cadastradas: <strong>{{ total_base }}</strong></p>
+        <header class="hero">
+            <p class="hero-badge">Sistema Inteligente</p>
+            <h1>Triagem de GIFs</h1>
+            <p>Total de referências cadastradas: <strong>{{ total_referencias }}</strong></p>
+        </header>
 
-        {% with mensagens = get_flashed_messages() %}
-            {% if mensagens %}
-                <div class="mensagens">
-                    {% for mensagem in mensagens %}
-                        <p>{{ mensagem }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        <!-- CADASTRAR -->
+        <section class="glass-card">
+            <h2>📥 Cadastrar GIF</h2>
 
-        <section class="bloco">
-            <h2>Cadastrar GIF</h2>
-            <form action="/cadastrar" method="post" enctype="multipart/form-data">
-                <label for="nome_referencia">Nome da referência</label>
-                <input type="text" id="nome_referencia" name="nome_referencia" placeholder="Ex.: GIF malicioso de teste" required>
+            <form action="/cadastrar" method="post" enctype="multipart/form-data" class="form-grid">
 
-                <label for="gif_base">Selecione o GIF</label>
-                <input type="file" id="gif_base" name="gif_base" accept=".gif" required>
+                <input type="text" name="nome" placeholder="Nome da referência" required>
 
-                <button type="submit">Cadastrar</button>
+                <input type="file" name="gif" required>
+
+                <button type="submit" class="btn-principal">Cadastrar</button>
+
             </form>
         </section>
 
-        <hr>
+        <!-- ANALISAR -->
+        <section class="glass-card">
+            <h2>🔍 Analisar GIF</h2>
 
-        <section class="bloco">
-            <h2>Analisar GIF</h2>
-            <form action="/analisar" method="post" enctype="multipart/form-data">
-                <label for="gif_consulta">Selecione o GIF para análise</label>
-                <input type="file" id="gif_consulta" name="gif_consulta" accept=".gif" required>
+            <form action="/analisar" method="post" enctype="multipart/form-data" class="form-grid">
 
-                <button type="submit">Analisar</button>
+                <input type="file" name="gif" required>
+
+                <button type="submit" class="btn-principal">Analisar</button>
+
             </form>
         </section>
 
-        <section class="bloco">
-            <h2>Resetar Base</h2>
-            <p>Use esta opção apenas se quiser apagar todas as referências cadastradas.</p>
-            <form action="/resetar-base" method="post">
-                <button type="submit" onclick="return confirm('Tem certeza que deseja apagar toda a base?')">
-                    Resetar Base
-                </button>
+        <!-- RESET -->
+        <section class="glass-card">
+            <h2>⚠️ Resetar Base</h2>
+            <p>Use com cuidado. Isso apagará todos os dados.</p>
+
+            <form action="/resetar" method="post">
+                <button type="submit" class="btn-danger">Resetar Base</button>
             </form>
         </section>
 
-    </div>
+    </main>
+
 </body>
 </html>
