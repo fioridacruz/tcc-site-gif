@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Análise</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+
+        <h1>Resultado da Análise</h1>
+
+        {% if suspeito %}
+            <h2 class="suspeito">⚠️ GIF suspeito</h2>
+        {% else %}
+            <h2 class="nao-suspeito">✅ GIF não suspeito</h2>
+        {% endif %}
+
+        <hr>
+
+        {% if melhor_resultado %}
+            <section class="bloco">
+                <h3>Melhor correspondência encontrada</h3>
+                <p><strong>Nome:</strong> {{ melhor_resultado.nome }}</p>
+                <p><strong>Menor distância:</strong> {{ melhor_resultado.menor_distancia }}</p>
+                <p><strong>Total de matches:</strong> {{ melhor_resultado.total_matches }}</p>
+            </section>
+        {% endif %}
+
+        {% if resultados %}
+            <section class="bloco">
+                <h3>Top resultados encontrados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Menor distância</th>
+                            <th>Total de matches</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in resultados %}
+                        <tr>
+                            <td>{{ item.nome }}</td>
+                            <td>{{ item.menor_distancia }}</td>
+                            <td>{{ item.total_matches }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% else %}
+            <section class="bloco">
+                <p>Nenhum resultado foi encontrado na base cadastrada.</p>
+            </section>
+        {% endif %}
+
+        <a href="/">⬅ Voltar para a página inicial</a>
+
+    </div>
+</body>
+</html>
