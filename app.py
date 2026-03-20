@@ -60,6 +60,18 @@ def distancia_hash(hash1, hash2):
     return imagehash.hex_to_hash(hash1) - imagehash.hex_to_hash(hash2)
 
 
+def calcular_porcentagem_similaridade(menor_distancia, limite_maximo=8):
+    """
+    Converte a menor distância em uma porcentagem simples de similaridade.
+    Quanto menor a distância, maior a porcentagem.
+    """
+    if menor_distancia is None:
+        return 0
+
+    porcentagem = int((1 - (menor_distancia / limite_maximo)) * 100)
+    return max(0, min(100, porcentagem))
+
+
 def comparar_com_base(hashes_consulta, limiar=8):
     base = carregar_base()
     correspondencias = []
@@ -79,10 +91,13 @@ def comparar_com_base(hashes_consulta, limiar=8):
                     total_matches += 1
 
         if menor_distancia is not None:
+            porcentagem = calcular_porcentagem_similaridade(menor_distancia, limiar)
+
             correspondencias.append({
                 "nome": nome_item,
                 "menor_distancia": menor_distancia,
-                "total_matches": total_matches
+                "total_matches": total_matches,
+                "porcentagem": porcentagem
             })
 
     correspondencias.sort(key=lambda x: (x["menor_distancia"], -x["total_matches"]))
@@ -133,7 +148,8 @@ def cadastrar():
 
 @app.route("/analisar", methods=["POST"])
 def analisar():
-    arquivo = request.files.get("gif_consulta")
+    # Compatível com o input novo do index.html
+    arquivo = request.files.get("gif")
 
     if not arquivo or arquivo.filename == "":
         flash("Selecione um GIF para análise.")
@@ -155,24 +171,21 @@ def analisar():
         melhor_resultado = None
         risco = 0
         nivel_risco = "Baixo"
-        cor_risco = "#22c55e"  # verde
+        cor_risco = "#22c55e"
 
         if resultados:
             melhor_resultado = resultados[0]
-
-            menor_distancia = melhor_resultado["menor_distancia"]
-
-            risco = max(0, min(100, int((1 - (menor_distancia / 8)) * 100)))
+            risco = melhor_resultado["porcentagem"]
 
             if risco >= 70:
                 nivel_risco = "Alto"
-                cor_risco = "#ef4444"  # vermelho
+                cor_risco = "#ef4444"
             elif risco >= 40:
                 nivel_risco = "Médio"
-                cor_risco = "#f59e0b"  # amarelo/laranja
+                cor_risco = "#f59e0b"
             else:
                 nivel_risco = "Baixo"
-                cor_risco = "#22c55e"  # verde
+                cor_risco = "#22c55e"
 
             if melhor_resultado["total_matches"] >= 1 and melhor_resultado["menor_distancia"] <= 8:
                 suspeito = True

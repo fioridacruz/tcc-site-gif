@@ -3,58 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Triagem de GIFs</title>
+    <title>Detector de GIFs Maliciosos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="resultado-page">
+<body>
 
-    <main class="resultado-container fade-up">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Analisando GIF, aguarde...</p>
+    </div>
 
-        <header class="hero">
-            <p class="hero-badge">Sistema Inteligente</p>
-            <h1>Triagem de GIFs</h1>
-            <p>Total de referências cadastradas: <strong>{{ total_referencias }}</strong></p>
-        </header>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
 
-        <!-- CADASTRAR -->
-        <section class="glass-card">
-            <h2>📥 Cadastrar GIF</h2>
+    <div class="container">
 
-            <form action="/cadastrar" method="post" enctype="multipart/form-data" class="form-grid">
+        <section class="hero premium-card">
+            <div class="hero-badge">Sistema inteligente de triagem</div>
 
-                <input type="text" name="nome" placeholder="Nome da referência" required>
+            <h1>Detector de GIFs Maliciosos</h1>
 
-                <input type="file" name="gif" required>
+            <p class="hero-text">
+                Plataforma acadêmica desenvolvida para analisar GIFs e identificar possíveis padrões suspeitos,
+                oferecendo uma experiência visual moderna, clara e profissional para apoio à detecção.
+            </p>
 
-                <button type="submit" class="btn-principal">Cadastrar</button>
+            <div class="hero-mini-info">
+                <div class="mini-pill">Interface premium</div>
+                <div class="mini-pill">Análise visual</div>
+                <div class="mini-pill">Projeto de TCC</div>
+            </div>
+        </section>
 
+        <section class="card premium-card fade-up delay-1">
+            <div class="section-heading">
+                <span class="section-icon">🎀</span>
+                <h2 class="section-title">Enviar GIF para análise</h2>
+            </div>
+
+            <form id="uploadForm" action="{{ url_for('analisar') }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-box premium-upload">
+                    <div class="upload-top">
+                        <h3>Selecione um arquivo GIF</h3>
+                        <p>
+                            Escolha um GIF para que o sistema realize a análise de similaridade e classificação.
+                        </p>
+                    </div>
+
+                    <label for="gifInput" class="custom-file-label">
+                        <span class="custom-file-icon">📁</span>
+                        <span>Escolher arquivo GIF</span>
+                    </label>
+
+                    <input type="file" name="gif" id="gifInput" accept=".gif" required>
+
+                    <p id="fileName" class="file-name">Nenhum arquivo selecionado</p>
+
+                    <div class="preview-container" id="previewContainer">
+                        <p class="preview-title">Pré-visualização do GIF</p>
+                        <img id="gifPreview" src="" alt="Preview do GIF">
+                    </div>
+
+                    <div class="actions center-actions">
+                        <button type="submit" class="btn btn-primary glow-btn">
+                            ✨ Analisar GIF
+                        </button>
+                    </div>
+                </div>
             </form>
         </section>
 
-        <!-- ANALISAR -->
-        <section class="glass-card">
-            <h2>🔍 Analisar GIF</h2>
+        <section class="grid-2 fade-up delay-2">
+            <div class="info-card premium-card">
+                <div class="section-heading">
+                    <span class="section-icon">💡</span>
+                    <h3>Como funciona</h3>
+                </div>
 
-            <form action="/analisar" method="post" enctype="multipart/form-data" class="form-grid">
+                <p>
+                    O sistema recebe um GIF enviado pelo usuário, executa uma análise de similaridade
+                    com padrões previamente avaliados e retorna uma classificação visual com apoio
+                    à interpretação do resultado.
+                </p>
+            </div>
 
-                <input type="file" name="gif" required>
+            <div class="info-card premium-card">
+                <div class="section-heading">
+                    <span class="section-icon">🛠️</span>
+                    <h3>Tecnologias utilizadas</h3>
+                </div>
 
-                <button type="submit" class="btn-principal">Analisar</button>
-
-            </form>
+                <ul class="tech-list">
+                    <li>Python</li>
+                    <li>Flask</li>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                </ul>
+            </div>
         </section>
 
-        <!-- RESET -->
-        <section class="glass-card">
-            <h2>⚠️ Resetar Base</h2>
-            <p>Use com cuidado. Isso apagará todos os dados.</p>
+        <section class="card premium-card fade-up delay-3">
+            <div class="section-heading">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Objetivo do projeto</h2>
+            </div>
 
-            <form action="/resetar" method="post">
-                <button type="submit" class="btn-danger">Resetar Base</button>
-            </form>
+            <p class="project-text">
+                Este projeto tem como objetivo apoiar a identificação de GIFs potencialmente maliciosos,
+                fornecendo uma interface acessível, elegante e intuitiva para testes, demonstrações
+                acadêmicas e apresentação profissional em banca.
+            </p>
         </section>
 
-    </main>
+        <footer class="footer-note fade-up delay-4">
+            <span>Projeto acadêmico de TCC</span>
+            <span class="footer-divider">•</span>
+            <span>Interface aprimorada para apresentação profissional</span>
+        </footer>
+
+    </div>
+
+    <script>
+        const gifInput = document.getElementById('gifInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const gifPreview = document.getElementById('gifPreview');
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const fileName = document.getElementById('fileName');
+
+        gifInput.addEventListener('change', function () {
+            const file = this.files[0];
+
+            if (file) {
+                const fileURL = URL.createObjectURL(file);
+                gifPreview.src = fileURL;
+                previewContainer.style.display = 'block';
+                fileName.textContent = `Arquivo selecionado: ${file.name}`;
+            } else {
+                previewContainer.style.display = 'none';
+                gifPreview.src = '';
+                fileName.textContent = 'Nenhum arquivo selecionado';
+            }
+        });
+
+        uploadForm.addEventListener('submit', function () {
+            loadingOverlay.style.display = 'flex';
+        });
+    </script>
 
 </body>
 </html>
