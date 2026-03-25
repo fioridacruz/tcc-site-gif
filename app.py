@@ -16,7 +16,7 @@ DATABASE = Path("database.db")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_FOLDER)
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
 
 # =========================
@@ -172,7 +172,7 @@ def cadastrar():
         conn.commit()
         conn.close()
 
-        flash(f'GIF "{nome}" cadastrado com sucesso no banco de dados!')
+        flash(f'GIF "{nome}" cadastrado com sucesso!')
 
     except Exception as e:
         flash(f"Erro ao cadastrar GIF: {str(e)}")
@@ -210,7 +210,7 @@ def analisar():
         conn.close()
 
         if not base_gifs:
-            flash("Nenhum GIF de referência foi cadastrado no banco de dados.")
+            flash("Nenhum GIF de referência cadastrado.")
             return redirect(url_for("index"))
 
         melhor_resultado = None
@@ -232,17 +232,18 @@ def analisar():
                 melhor_resultado = resultado
 
         if melhor_resultado is None:
-            flash("Não foi possível comparar o GIF enviado.")
+            flash("Erro na comparação.")
             return redirect(url_for("index"))
 
-        # REGRA DE DECISÃO
         suspeito = (
             melhor_resultado["menor_distancia"] <= 8
             or melhor_resultado["total_matches"] >= 3
         )
 
-        # Percentual visual para o front
-        percentual_similaridade = max(0, min(100, round((1 - (melhor_resultado["menor_distancia"] / 16)) * 100, 2)))
+        percentual_similaridade = max(
+            0,
+            min(100, round((1 - (melhor_resultado["menor_distancia"] / 16)) * 100, 2))
+        )
 
         salvar_analise(
             nome_arquivo=arquivo.filename,
@@ -280,8 +281,9 @@ def historico():
     return render_template("historico.html", analises=analises)
 
 
+# =========================
+# EXECUÇÃO
+# =========================
 if __name__ == "__main__":
     criar_tabelas()
-    app.run(debug=True)
-    if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
