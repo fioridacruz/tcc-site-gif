@@ -3,155 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detector de GIFs Maliciosos</title>
+    <title>Sistema de Triagem de GIFs</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <p>Analisando GIF, aguarde...</p>
-    </div>
-
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-    <div class="bg-glow bg-glow-3"></div>
-
-    <div class="container">
-
-        <section class="hero premium-card">
-            <div class="hero-badge">Sistema inteligente de triagem</div>
-
-            <h1>Detector de GIFs Maliciosos</h1>
-
-            <p class="hero-text">
-                Plataforma acadêmica desenvolvida para analisar GIFs e identificar possíveis padrões suspeitos,
-                oferecendo uma experiência visual moderna, clara e profissional para apoio à detecção.
-            </p>
-
-            <div class="hero-mini-info">
-                <div class="mini-pill">Interface premium</div>
-                <div class="mini-pill">Análise visual</div>
-                <div class="mini-pill">Projeto de TCC</div>
-            </div>
-        </section>
-
-        <section class="card premium-card fade-up delay-1">
-            <div class="section-heading">
-                <span class="section-icon">🎀</span>
-                <h2 class="section-title">Enviar GIF para análise</h2>
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="brand">
+                <div class="brand-badge">IA</div>
+                <div class="brand-text">
+                    <h1>Sistema de Triagem de GIFs</h1>
+                    <span>Projeto acadêmico em Segurança da Informação</span>
+                </div>
             </div>
 
-            <form id="uploadForm" action="{{ url_for('analisar') }}" method="POST" enctype="multipart/form-data">
-                <div class="upload-box premium-upload">
-                    <div class="upload-top">
-                        <h3>Selecione um arquivo GIF</h3>
+            <nav class="nav-links">
+                <a href="#projeto">Projeto</a>
+                <a href="#funcionamento">Funcionamento</a>
+                <a href="#analise">Análise</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrapper">
+
+        <section class="hero">
+            <div class="hero-grid">
+                <div class="hero-card">
+                    <div class="eyebrow">Plataforma acadêmica de análise automatizada</div>
+
+                    <h2>
+                        Detecção de semelhança entre GIFs com apoio de
+                        hash perceptual e análise computacional
+                    </h2>
+
+                    <p>
+                        Este sistema foi desenvolvido como parte de um Trabalho de Conclusão de Curso na área de
+                        Segurança da Informação, com foco na triagem de arquivos GIF e identificação de conteúdos
+                        potencialmente suspeitos por meio de comparação técnica entre padrões visuais.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#analise" class="btn">Iniciar análise</a>
+                        <a href="#projeto" class="btn-secondary">Entender o projeto</a>
+                    </div>
+
+                    <div class="hero-metrics">
+                        <div class="metric">
+                            <strong>Hash perceptual</strong>
+                            <span>Comparação baseada em características visuais dos frames</span>
+                        </div>
+                        <div class="metric">
+                            <strong>Triagem técnica</strong>
+                            <span>Apoio à classificação inicial de conteúdos enviados</span>
+                        </div>
+                        <div class="metric">
+                            <strong>Base estruturada</strong>
+                            <span>Cadastro de referências para uso comparativo no sistema</span>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="panel-card">
+                    <div class="panel-head">
+                        <h3>Visão geral do TCC</h3>
                         <p>
-                            Escolha um GIF para que o sistema realize a análise de similaridade e classificação.
+                            A proposta central do sistema é auxiliar processos de identificação de conteúdos
+                            suspeitos, tornando a análise inicial mais organizada, objetiva e tecnologicamente apoiada.
                         </p>
                     </div>
 
-                    <label for="gifInput" class="custom-file-label">
-                        <span class="custom-file-icon">📁</span>
-                        <span>Escolher arquivo GIF</span>
-                    </label>
+                    <div class="mini-stack">
+                        <div class="mini-item">
+                            <strong>Problema abordado</strong>
+                            <span>
+                                Dificuldade de triagem manual de arquivos animados e necessidade de apoio automatizado.
+                            </span>
+                        </div>
 
-                    <input type="file" name="gif" id="gifInput" accept=".gif" required>
+                        <div class="mini-item">
+                            <strong>Tecnologia aplicada</strong>
+                            <span>
+                                Processamento de frames, geração de hash e comparação de similaridade.
+                            </span>
+                        </div>
 
-                    <p id="fileName" class="file-name">Nenhum arquivo selecionado</p>
-
-                    <div class="preview-container" id="previewContainer">
-                        <p class="preview-title">Pré-visualização do GIF</p>
-                        <img id="gifPreview" src="" alt="Preview do GIF">
+                        <div class="mini-item">
+                            <strong>Objetivo acadêmico</strong>
+                            <span>
+                                Demonstrar como técnicas computacionais podem apoiar mecanismos de detecção e análise.
+                            </span>
+                        </div>
                     </div>
-
-                    <div class="actions center-actions">
-                        <button type="submit" class="btn btn-primary glow-btn">
-                            ✨ Analisar GIF
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </aside>
+            </div>
         </section>
 
-        <section class="grid-2 fade-up delay-2">
-            <div class="info-card premium-card">
-                <div class="section-heading">
-                    <span class="section-icon">💡</span>
-                    <h3>Como funciona</h3>
-                </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <section class="flash-wrapper">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
 
+        <section class="section" id="projeto">
+            <div class="section-header">
+                <h3>Sobre o projeto</h3>
                 <p>
-                    O sistema recebe um GIF enviado pelo usuário, executa uma análise de similaridade
-                    com padrões previamente avaliados e retorna uma classificação visual com apoio
-                    à interpretação do resultado.
+                    O sistema foi pensado para atuar como uma ferramenta de apoio à análise de conteúdo,
+                    recebendo arquivos GIF, extraindo informações visuais relevantes e comparando esses dados
+                    com materiais previamente cadastrados na base do sistema.
                 </p>
             </div>
 
-            <div class="info-card premium-card">
-                <div class="section-heading">
-                    <span class="section-icon">🛠️</span>
-                    <h3>Tecnologias utilizadas</h3>
+            <div class="info-grid">
+                <article class="info-card">
+                    <div class="icon-soft">🔎</div>
+                    <h4>Finalidade</h4>
+                    <p>
+                        Apoiar a identificação de padrões visuais semelhantes entre arquivos analisados e conteúdos
+                        cadastrados como referência, contribuindo para uma triagem inicial mais eficiente.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div class="icon-soft">🧠</div>
+                    <h4>Lógica utilizada</h4>
+                    <p>
+                        A plataforma utiliza processamento de imagem quadro a quadro, transformando frames em hashes
+                        perceptuais para medir proximidade visual entre GIFs distintos.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div class="icon-soft">🛡️</div>
+                    <h4>Aplicação em segurança</h4>
+                    <p>
+                        O projeto demonstra como recursos computacionais podem ser usados em contextos de monitoramento,
+                        investigação, apoio à triagem e automação de processos em segurança digital.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="funcionamento">
+            <div class="section-header">
+                <h3>Como o sistema funciona</h3>
+                <p>
+                    O fluxo abaixo resume as etapas executadas pela aplicação desde o recebimento do arquivo
+                    até a geração do resultado da análise.
+                </p>
+            </div>
+
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Envio do GIF</h4>
+                    <p>
+                        O usuário seleciona um arquivo GIF para cadastro ou análise dentro da plataforma.
+                    </p>
                 </div>
 
-                <ul class="tech-list">
-                    <li>Python</li>
-                    <li>Flask</li>
-                    <li>HTML</li>
-                    <li>CSS</li>
-                    <li>JavaScript</li>
-                </ul>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>Leitura dos frames</h4>
+                    <p>
+                        O sistema percorre os quadros da animação para identificar suas características visuais.
+                    </p>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>Geração de hash</h4>
+                    <p>
+                        Cada frame recebe uma representação matemática simplificada para permitir comparação.
+                    </p>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>Resultado comparativo</h4>
+                    <p>
+                        A aplicação mede a similaridade com a base cadastrada e retorna a melhor correspondência.
+                    </p>
+                </div>
             </div>
         </section>
 
-        <section class="card premium-card fade-up delay-3">
-            <div class="section-heading">
-                <span class="section-icon">🎯</span>
-                <h2 class="section-title">Objetivo do projeto</h2>
+        <section class="section" id="analise">
+            <div class="section-header">
+                <h3>Ambiente de operação</h3>
+                <p>
+                    Abaixo estão os módulos principais da plataforma: o cadastro de materiais de referência e a
+                    análise comparativa de novos arquivos enviados para triagem.
+                </p>
             </div>
 
-            <p class="project-text">
-                Este projeto tem como objetivo apoiar a identificação de GIFs potencialmente maliciosos,
-                fornecendo uma interface acessível, elegante e intuitiva para testes, demonstrações
-                acadêmicas e apresentação profissional em banca.
-            </p>
+            <div class="forms-grid">
+                <section class="form-card">
+                    <span class="card-label">Módulo 01</span>
+                    <h4>Cadastrar GIF de referência</h4>
+                    <p>
+                        Utilize esta área para adicionar um GIF à base comparativa do sistema. Esse conteúdo
+                        poderá ser utilizado em análises futuras como parâmetro de semelhança.
+                    </p>
+
+                    <form action="{{ url_for('cadastrar') }}" method="POST" enctype="multipart/form-data">
+                        <div class="field-group">
+                            <label for="nome_base">Nome de identificação</label>
+                            <input
+                                type="text"
+                                name="nome_base"
+                                id="nome_base"
+                                placeholder="Ex: Referência 01"
+                                required
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="gif_base">Selecionar arquivo GIF</label>
+                            <input
+                                type="file"
+                                name="gif_base"
+                                id="gif_base"
+                                accept=".gif"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="btn">Cadastrar referência</button>
+                    </form>
+
+                    <p class="form-note">
+                        Esse cadastro alimenta a base de comparação utilizada pela aplicação.
+                    </p>
+                </section>
+
+                <section class="form-card">
+                    <span class="card-label">Módulo 02</span>
+                    <h4>Analisar novo GIF</h4>
+                    <p>
+                        Envie um arquivo para que o sistema realize a leitura dos frames, a extração do hash
+                        perceptual e a comparação com os registros existentes na base.
+                    </p>
+
+                    <form action="{{ url_for('analisar') }}" method="POST" enctype="multipart/form-data">
+                        <div class="field-group">
+                            <label for="gif">Selecionar GIF para análise</label>
+                            <input
+                                type="file"
+                                name="gif"
+                                id="gif"
+                                accept=".gif"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="btn">Executar análise</button>
+                    </form>
+
+                    <p class="form-note">
+                        O resultado exibirá a melhor correspondência encontrada e o percentual de similaridade calculado.
+                    </p>
+                </section>
+            </div>
         </section>
 
-        <footer class="footer-note fade-up delay-4">
-            <span>Projeto acadêmico de TCC</span>
-            <span class="footer-divider">•</span>
-            <span>Interface aprimorada para apresentação profissional</span>
-        </footer>
-
-    </div>
-
-    <script>
-        const gifInput = document.getElementById('gifInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const gifPreview = document.getElementById('gifPreview');
-        const uploadForm = document.getElementById('uploadForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const fileName = document.getElementById('fileName');
-
-        gifInput.addEventListener('change', function () {
-            const file = this.files[0];
-
-            if (file) {
-                const fileURL = URL.createObjectURL(file);
-                gifPreview.src = fileURL;
-                previewContainer.style.display = 'block';
-                fileName.textContent = `Arquivo selecionado: ${file.name}`;
-            } else {
-                previewContainer.style.display = 'none';
-                gifPreview.src = '';
-                fileName.textContent = 'Nenhum arquivo selecionado';
-            }
-        });
-
-        uploadForm.addEventListener('submit', function () {
-            loadingOverlay.style.display = 'flex';
-        });
-    </script>
+        <div class="footer-space"></div>
+    </main>
 
 </body>
 </html>

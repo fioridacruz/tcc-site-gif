@@ -1,4 +1,5 @@
 import json
+import sqlite3
 import uuid
 from pathlib import Path
 
@@ -10,214 +11,277 @@ app = Flask(__name__)
 app.secret_key = "segredo-tcc"
 
 UPLOAD_FOLDER = Path("uploads")
-BASE_HASHES_FILE = Path("base_hashes.json")
+DATABASE = Path("database.db")
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_FOLDER)
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 
 
-def carregar_base():
-    if BASE_HASHES_FILE.exists():
-        with open(BASE_HASHES_FILE, "r", encoding="utf-8") as arquivo:
-            return json.load(arquivo)
-    return {}
+# =========================
+# BANCO DE DADOS
+# =========================
+def conectar_banco():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-def salvar_base(base):
-    with open(BASE_HASHES_FILE, "w", encoding="utf-8") as arquivo:
-        json.dump(base, arquivo, ensure_ascii=False, indent=2)
+def criar_tabelas():
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS gifs_base (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            hashes TEXT NOT NULL,
+            data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS analises (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome_arquivo TEXT NOT NULL,
+            suspeito INTEGER NOT NULL,
+            percentual_similaridade REAL,
+            melhor_correspondencia TEXT,
+            menor_distancia INTEGER,
+            total_matches INTEGER,
+            data_analise TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
 
 
+# =========================
+# FUNÇÕES AUXILIARES
+# =========================
 def arquivo_permitido(nome_arquivo):
     return "." in nome_arquivo and nome_arquivo.rsplit(".", 1)[1].lower() == "gif"
 
 
-def extrair_hashes_do_gif(caminho_gif, salto=5, limite=15):
+def gerar_hashes_gif(caminho_gif):
     hashes = []
 
     with Image.open(caminho_gif) as gif:
-        contador = 0
-        salvos = 0
-
         for frame in ImageSequence.Iterator(gif):
-            if contador % salto == 0:
-                frame_rgb = frame.convert("RGB")
-                h = imagehash.phash(frame_rgb)
-                hashes.append(str(h))
-                salvos += 1
-
-                if salvos >= limite:
-                    break
-
-            contador += 1
+            frame_rgb = frame.convert("RGB")
+            hash_frame = str(imagehash.average_hash(frame_rgb))
+            hashes.append(hash_frame)
 
     return hashes
 
 
-def distancia_hash(hash1, hash2):
-    return imagehash.hex_to_hash(hash1) - imagehash.hex_to_hash(hash2)
+def calcular_distancia_media(hashes_upload, hashes_base):
+    distancias = []
+
+    for hash_upload in hashes_upload:
+        h_upload = imagehash.hex_to_hash(hash_upload)
+
+        menor_distancia_frame = None
+
+        for hash_base in hashes_base:
+            h_base = imagehash.hex_to_hash(hash_base)
+            distancia = h_upload - h_base
+
+            if menor_distancia_frame is None or distancia < menor_distancia_frame:
+                menor_distancia_frame = distancia
+
+        if menor_distancia_frame is not None:
+            distancias.append(menor_distancia_frame)
+
+    if not distancias:
+        return None, 0
+
+    media = sum(distancias) / len(distancias)
+    total_matches = sum(1 for d in distancias if d <= 8)
+
+    return media, total_matches
 
 
-def calcular_porcentagem_similaridade(menor_distancia, limite_maximo=8):
-    """
-    Converte a menor distância em uma porcentagem simples de similaridade.
-    Quanto menor a distância, maior a porcentagem.
-    """
-    if menor_distancia is None:
-        return 0
+def salvar_analise(nome_arquivo, suspeito, percentual_similaridade, melhor_correspondencia, menor_distancia, total_matches):
+    conn = conectar_banco()
+    cursor = conn.cursor()
 
-    porcentagem = int((1 - (menor_distancia / limite_maximo)) * 100)
-    return max(0, min(100, porcentagem))
+    cursor.execute("""
+        INSERT INTO analises (
+            nome_arquivo, suspeito, percentual_similaridade,
+            melhor_correspondencia, menor_distancia, total_matches
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        nome_arquivo,
+        1 if suspeito else 0,
+        percentual_similaridade,
+        melhor_correspondencia,
+        menor_distancia,
+        total_matches
+    ))
 
-
-def comparar_com_base(hashes_consulta, limiar=8):
-    base = carregar_base()
-    correspondencias = []
-
-    for nome_item, hashes_base in base.items():
-        menor_distancia = None
-        total_matches = 0
-
-        for h1 in hashes_consulta:
-            for h2 in hashes_base:
-                dist = distancia_hash(h1, h2)
-
-                if menor_distancia is None or dist < menor_distancia:
-                    menor_distancia = dist
-
-                if dist <= limiar:
-                    total_matches += 1
-
-        if menor_distancia is not None:
-            porcentagem = calcular_porcentagem_similaridade(menor_distancia, limiar)
-
-            correspondencias.append({
-                "nome": nome_item,
-                "menor_distancia": menor_distancia,
-                "total_matches": total_matches,
-                "porcentagem": porcentagem
-            })
-
-    correspondencias.sort(key=lambda x: (x["menor_distancia"], -x["total_matches"]))
-    return correspondencias
+    conn.commit()
+    conn.close()
 
 
+# =========================
+# ROTAS
+# =========================
 @app.route("/")
 def index():
-    base = carregar_base()
-    return render_template("index.html", total_base=len(base))
+    return render_template("index.html")
 
 
 @app.route("/cadastrar", methods=["POST"])
 def cadastrar():
-    nome_referencia = request.form.get("nome_referencia", "").strip()
-    arquivo = request.files.get("gif_base")
-
-    if not nome_referencia:
-        flash("Informe um nome para a referência.")
+    if "gif_base" not in request.files:
+        flash("Nenhum arquivo enviado.")
         return redirect(url_for("index"))
+
+    arquivo = request.files["gif_base"]
+    nome = request.form.get("nome_base", "").strip()
 
     if not arquivo or arquivo.filename == "":
         flash("Selecione um GIF para cadastrar.")
         return redirect(url_for("index"))
 
-    if not arquivo_permitido(arquivo.filename):
-        flash("Apenas arquivos .gif são permitidos.")
+    if not nome:
+        flash("Informe um nome para o GIF de referência.")
         return redirect(url_for("index"))
 
-    nome_arquivo = f"{uuid.uuid4().hex}.gif"
-    caminho = UPLOAD_FOLDER / nome_arquivo
-    arquivo.save(caminho)
+    if not arquivo_permitido(arquivo.filename):
+        flash("Apenas arquivos GIF são permitidos.")
+        return redirect(url_for("index"))
+
+    nome_arquivo = f"{uuid.uuid4()}.gif"
+    caminho_arquivo = UPLOAD_FOLDER / nome_arquivo
+    arquivo.save(caminho_arquivo)
 
     try:
-        hashes = extrair_hashes_do_gif(caminho)
-        base = carregar_base()
-        base[nome_referencia] = hashes
-        salvar_base(base)
-        flash(f"GIF '{nome_referencia}' cadastrado com sucesso.")
-    except Exception as erro:
-        flash(f"Erro ao cadastrar GIF: {erro}")
-    finally:
-        if caminho.exists():
-            caminho.unlink()
+        hashes = gerar_hashes_gif(caminho_arquivo)
+
+        conn = conectar_banco()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO gifs_base (nome, hashes)
+            VALUES (?, ?)
+        """, (nome, json.dumps(hashes)))
+        conn.commit()
+        conn.close()
+
+        flash(f'GIF "{nome}" cadastrado com sucesso no banco de dados!')
+
+    except Exception as e:
+        flash(f"Erro ao cadastrar GIF: {str(e)}")
 
     return redirect(url_for("index"))
 
 
 @app.route("/analisar", methods=["POST"])
 def analisar():
-    # Compatível com o input novo do index.html
-    arquivo = request.files.get("gif")
+    if "gif" not in request.files:
+        flash("Nenhum arquivo enviado.")
+        return redirect(url_for("index"))
+
+    arquivo = request.files["gif"]
 
     if not arquivo or arquivo.filename == "":
-        flash("Selecione um GIF para análise.")
+        flash("Selecione um GIF para analisar.")
         return redirect(url_for("index"))
 
     if not arquivo_permitido(arquivo.filename):
-        flash("Apenas arquivos .gif são permitidos.")
+        flash("Apenas arquivos GIF são permitidos.")
         return redirect(url_for("index"))
 
-    nome_arquivo = f"{uuid.uuid4().hex}.gif"
-    caminho = UPLOAD_FOLDER / nome_arquivo
-    arquivo.save(caminho)
+    nome_arquivo = f"{uuid.uuid4()}.gif"
+    caminho_arquivo = UPLOAD_FOLDER / nome_arquivo
+    arquivo.save(caminho_arquivo)
 
     try:
-        hashes_consulta = extrair_hashes_do_gif(caminho)
-        resultados = comparar_com_base(hashes_consulta, limiar=8)
+        hashes_upload = gerar_hashes_gif(caminho_arquivo)
 
-        suspeito = False
+        conn = conectar_banco()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM gifs_base")
+        base_gifs = cursor.fetchall()
+        conn.close()
+
+        if not base_gifs:
+            flash("Nenhum GIF de referência foi cadastrado no banco de dados.")
+            return redirect(url_for("index"))
+
         melhor_resultado = None
-        risco = 0
-        nivel_risco = "Baixo"
-        cor_risco = "#22c55e"
 
-        if resultados:
-            melhor_resultado = resultados[0]
-            risco = melhor_resultado["porcentagem"]
+        for gif_base in base_gifs:
+            hashes_base = json.loads(gif_base["hashes"])
+            distancia_media, total_matches = calcular_distancia_media(hashes_upload, hashes_base)
 
-            if risco >= 70:
-                nivel_risco = "Alto"
-                cor_risco = "#ef4444"
-            elif risco >= 40:
-                nivel_risco = "Médio"
-                cor_risco = "#f59e0b"
-            else:
-                nivel_risco = "Baixo"
-                cor_risco = "#22c55e"
+            if distancia_media is None:
+                continue
 
-            if melhor_resultado["total_matches"] >= 1 and melhor_resultado["menor_distancia"] <= 8:
-                suspeito = True
+            resultado = {
+                "nome": gif_base["nome"],
+                "menor_distancia": round(distancia_media, 2),
+                "total_matches": total_matches
+            }
+
+            if melhor_resultado is None or resultado["menor_distancia"] < melhor_resultado["menor_distancia"]:
+                melhor_resultado = resultado
+
+        if melhor_resultado is None:
+            flash("Não foi possível comparar o GIF enviado.")
+            return redirect(url_for("index"))
+
+        # REGRA DE DECISÃO
+        suspeito = (
+            melhor_resultado["menor_distancia"] <= 8
+            or melhor_resultado["total_matches"] >= 3
+        )
+
+        # Percentual visual para o front
+        percentual_similaridade = max(0, min(100, round((1 - (melhor_resultado["menor_distancia"] / 16)) * 100, 2)))
+
+        salvar_analise(
+            nome_arquivo=arquivo.filename,
+            suspeito=suspeito,
+            percentual_similaridade=percentual_similaridade,
+            melhor_correspondencia=melhor_resultado["nome"],
+            menor_distancia=melhor_resultado["menor_distancia"],
+            total_matches=melhor_resultado["total_matches"]
+        )
 
         return render_template(
             "resultado.html",
             suspeito=suspeito,
-            resultados=resultados[:10],
-            melhor_resultado=melhor_resultado,
-            risco=risco,
-            nivel_risco=nivel_risco,
-            cor_risco=cor_risco
+            percentual_similaridade=percentual_similaridade,
+            melhor_resultado=melhor_resultado
         )
 
-    except Exception as erro:
-        flash(f"Erro ao analisar GIF: {erro}")
+    except Exception as e:
+        flash(f"Erro ao analisar GIF: {str(e)}")
         return redirect(url_for("index"))
-    finally:
-        if caminho.exists():
-            caminho.unlink()
 
 
-@app.route("/resetar-base", methods=["POST"])
-def resetar_base():
-    salvar_base({})
-    flash("Base resetada com sucesso.")
-    return redirect(url_for("index"))
+@app.route("/historico")
+def historico():
+    conn = conectar_banco()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM analises
+        ORDER BY data_analise DESC
+        LIMIT 20
+    """)
+    analises = cursor.fetchall()
+    conn.close()
+
+    return render_template("historico.html", analises=analises)
 
 
 if __name__ == "__main__":
-    import os
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(debug=False, host="0.0.0.0", port=port)
+    criar_tabelas()
+    app.run(debug=True)
+    if __name__ == "__main__":
+    app.run(debug=True)

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../templates"
+		},
+		{
+			"path": "../uploads"
+		}
+	],
+	"settings": {}
+}
