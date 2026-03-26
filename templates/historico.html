@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Análises</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="brand">
+                <div class="brand-badge">IA</div>
+                <div class="brand-text">
+                    <h1>Sistema de Triagem de GIFs</h1>
+                    <span>Histórico de análises realizadas</span>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}">Início</a>
+                <a href="{{ url_for('historico') }}">Histórico</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrapper history-layout">
+        <section class="history-card">
+            <div class="section-header">
+                <h3>Histórico de análises</h3>
+                <p>
+                    Esta área apresenta os registros mais recentes processados pelo sistema,
+                    permitindo visualizar classificações, percentuais de similaridade e a
+                    melhor correspondência encontrada na base comparativa.
+                </p>
+            </div>
+
+            {% if analises %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Arquivo</th>
+                                <th>Classificação</th>
+                                <th>Similaridade</th>
+                                <th>Melhor correspondência</th>
+                                <th>Menor distância</th>
+                                <th>Total de matches</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in analises %}
+                            <tr>
+                                <td>{{ item.nome_arquivo }}</td>
+                                <td>
+                                    {% if item.suspeito %}
+                                        <span class="badge-danger">Suspeito</span>
+                                    {% else %}
+                                        <span class="badge-success">Não suspeito</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.percentual_similaridade }}%</td>
+                                <td>{{ item.melhor_correspondencia or "-" }}</td>
+                                <td>{{ item.menor_distancia or "-" }}</td>
+                                <td>{{ item.total_matches or "-" }}</td>
+                                <td>{{ item.data_analise }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="result-box">
+                    <h4>Nenhuma análise encontrada</h4>
+                    <p>
+                        Ainda não existem registros salvos no histórico. Assim que um GIF for
+                        analisado, os resultados passarão a aparecer nesta tela.
+                    </p>
+                    <span class="badge-soft">Histórico vazio no momento</span>
+                </div>
+            {% endif %}
+
+            <div class="result-actions">
+                <a href="{{ url_for('index') }}" class="btn-secondary">← Voltar ao início</a>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

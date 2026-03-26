@@ -268,17 +268,24 @@ def analisar():
 
 @app.route("/historico")
 def historico():
-    conn = conectar_banco()
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT * FROM analises
-        ORDER BY data_analise DESC
-        LIMIT 20
-    """)
-    analises = cursor.fetchall()
-    conn.close()
+    try:
+        conn = conectar_banco()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM analises
+            ORDER BY data_analise DESC
+            LIMIT 20
+        """)
+        resultados = cursor.fetchall()
+        conn.close()
 
-    return render_template("historico.html", analises=analises)
+        analises = [dict(item) for item in resultados]
+
+        return render_template("historico.html", analises=analises)
+
+    except Exception as e:
+        flash(f"Erro ao carregar histórico: {str(e)}")
+        return redirect(url_for("index"))
 
 
 # =========================
