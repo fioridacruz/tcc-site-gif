@@ -196,57 +196,83 @@
 </section> <!-- fecha seção -->
             </div>
         </section>
-      <div class="highlight-card">
-    <div class="icon-soft">⚠️</div>
-
-    
-
-    <p>
-        Em sistemas que analisam imagens ou GIFs, modificações quase imperceptíveis podem impactar
-        a comparação visual e a confiabilidade dos resultados.
-    </p>
-
-    <p>
-        Por isso, este projeto considera a importância da robustez contra manipulações visuais
-        e possíveis tentativas de evasão.
-    </p>
-</div>
+      
     </div>
 
-    <div class="highlight-card">
-        <div class="icon-soft">⚠️</div>
-        <h4>Por que isso importa?</h4>
+
+<section class="poisoning-lab">
+
+    <div class="lab-header">
+        <span class="lab-tag">Laboratório de Segurança em IA</span>
+
+        <h2>Simulação de Pixel Poisoning</h2>
 
         <p>
-            Em sistemas que analisam imagens ou GIFs, modificações quase imperceptíveis
-            podem impactar a comparação visual e a confiabilidade dos resultados.
-        </p>
-
-        <p>
-            Por isso, este projeto considera a importância da robustez contra manipulações
-            visuais e possíveis tentativas de evasão.
-        </p>
-    </div>
-</section>
-<section class="section" id="simulacao">
-    <div class="section-header">
-        <h3>Simulação educativa</h3>
-        <p>
-            Esta área demonstra como pequenas alterações visuais podem impactar
-            a análise computacional de imagens.
+            Esta área demonstra, de forma educativa, como alterações visuais em pixels
+            podem afetar a interpretação computacional de imagens e comprometer a
+            confiabilidade de sistemas baseados em análise visual.
         </p>
     </div>
 
-    <div class="highlight-card">
-        <h4>Teste de alteração visual</h4>
+    <div class="lab-grid">
 
-        <p>
-            Você pode enviar um GIF e observar como mudanças simples podem influenciar
-            o resultado da análise.
-        </p>
+        <div class="lab-info-card">
+            <h3>O que é analisado?</h3>
 
-        <a href="#analise" class="btn">Testar na análise</a>
+            <p>
+                A imagem enviada é processada, alterada artificialmente e comparada
+                com sua versão original por meio de hash perceptual.
+            </p>
+        </div>
+
+        <div class="lab-info-card">
+            <h3>Por que importa?</h3>
+
+            <p>
+                Pequenas perturbações podem dificultar a detecção correta por sistemas
+                automatizados, exigindo maior robustez em aplicações de IA.
+            </p>
+        </div>
+
+        <div class="lab-info-card">
+            <h3>Objetivo acadêmico</h3>
+
+            <p>
+                A simulação não representa um ataque real, mas uma demonstração visual
+                controlada para fins educacionais e de pesquisa.
+            </p>
+        </div>
+
     </div>
+
+    <div class="lab-action-card">
+
+        <div>
+            <h3>Teste de alteração visual</h3>
+
+            <p>
+                Envie uma imagem para gerar uma versão modificada e observar o impacto
+                da perturbação nos pixels e no hash perceptual.
+            </p>
+        </div>
+
+        <form action="/simular-envenenamento" method="POST" enctype="multipart/form-data">
+
+            <input
+                type="file"
+                name="imagem_poisoning"
+                accept="image/*"
+                required
+            >
+
+            <button type="submit">
+                Simular Pixel Poisoning
+            </button>
+
+        </form>
+
+    </div>
+
 </section>
         <section class="section" id="funcionamento">
             <div class="section-header">
@@ -373,39 +399,7 @@
 
         <div class="footer-space"></div>
    
-<section class="poisoning-section">
 
-    <div class="poisoning-card">
-
-        <h2>Laboratório de Pixel Poisoning</h2>
-
-        <p>
-            Esta simulação demonstra como pequenas alterações em pixels podem
-            modificar a representação perceptual de uma imagem.
-        </p>
-
-        <form
-            action="/simular-envenenamento"
-            method="POST"
-            enctype="multipart/form-data"
-        >
-
-            <input
-                type="file"
-                name="imagem_poisoning"
-                accept="image/*"
-                required
-            >
-
-            <button type="submit">
-                Simular Envenenamento
-            </button>
-
-        </form>
-
-    </div>
-
-</section>
 
     </main>
 
