@@ -1226,3 +1226,161 @@ body::after {
         align-items: flex-start;
     }
 }
+#seguranca .info-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#seguranca .info-card {
+    max-width: 700px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#seguranca p {
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+#seguranca .info-card {
+    max-width: 650px;
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 30px;
+}
+#seguranca .info-card {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+#simulacao .highlight-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 35px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.22);
+    text-align: center;
+}
+#simulacao .highlight-card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.poisoning-section {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+.poisoning-card {
+    width: 100%;
+    max-width: 850px;
+    padding: 35px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 30px rgba(180, 120, 255, 0.25);
+    text-align: center;
+}
+
+.poisoning-card h2 {
+    margin-bottom: 18px;
+    font-size: 2rem;
+}
+
+.poisoning-card p {
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.poisoning-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+
+.poisoning-card input[type="file"] {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px;
+    border-radius: 14px;
+}
+
+.poisoning-card button,
+.botao-voltar {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff7ad9, #8b5cf6);
+    color: white;
+    transition: 0.3s ease;
+}
+
+.poisoning-card button:hover,
+.botao-voltar:hover {
+    transform: translateY(-3px);
+}
+
+.resultado-poisoning-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.resultado-poisoning-card {
+    width: 100%;
+    max-width: 1000px;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+    text-align: center;
+}
+
+.comparacao-imagens {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin: 35px 0;
+}
+
+.comparacao-imagens img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 18px;
+}
+
+.metricas-poisoning {
+    margin: 30px 0;
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    text-align: left;
+    word-break: break-word;
+}
+
+.metricas-poisoning p {
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+
+    .comparacao-imagens {
+        grid-template-columns: 1fr;
+    }
+
+    .resultado-poisoning-card {
+        padding: 25px;
+    }
+}

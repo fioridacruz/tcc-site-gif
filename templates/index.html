@@ -149,7 +149,105 @@
                 </article>
             </div>
         </section>
+        <!-- 🔐 NOVA SEÇÃO ADICIONADA -->
+        <section class="section" id="seguranca">
+            <div class="section-header">
+                <h3>Segurança e Ameaças em IA</h3>
+                <p>
+                    Além do funcionamento técnico, é importante compreender os riscos associados
+                    ao uso de inteligência artificial em análise de imagens.
+                </p>
+            </div>
 
+            <div class="info-grid">
+                <article class="info-card">
+                    <div class="icon-soft">⚠️</div>
+                    <h4>Envenenamento de Imagens <span>(*Pixel Poisoning*)</span></h4>
+
+                    <p>
+                        O envenenamento de imagens, também conhecido como <em>Pixel Poisoning</em>,
+                        é uma técnica de ataque em que pequenas alterações são feitas nos pixels
+                        de uma imagem de forma quase imperceptível ao olho humano.
+                    </p>
+
+                    <p>
+                        Essas modificações podem levar modelos de inteligência artificial a
+                        interpretar incorretamente o conteúdo analisado, comprometendo a
+                        confiabilidade dos resultados.
+                    </p>
+
+                    <p>
+                        Esse tipo de ameaça é especialmente relevante em sistemas de análise
+                        automatizada, como este projeto, que utiliza comparação visual entre
+                        arquivos GIF para auxiliar na triagem de conteúdos.
+                    </p>
+              </article>
+
+</article>
+
+<p style="margin-top: 20px; opacity: 0.9;">
+    Apesar da eficiência da abordagem baseada em hash perceptual, é importante
+    considerar que técnicas como o <em>Pixel Poisoning</em> podem impactar a
+    confiabilidade dos resultados, indicando a necessidade de aprimoramentos
+    futuros voltados à robustez do sistema.
+</p>
+
+</div> <!-- fecha info-grid -->
+</section> <!-- fecha seção -->
+            </div>
+        </section>
+      <div class="highlight-card">
+    <div class="icon-soft">⚠️</div>
+
+    
+
+    <p>
+        Em sistemas que analisam imagens ou GIFs, modificações quase imperceptíveis podem impactar
+        a comparação visual e a confiabilidade dos resultados.
+    </p>
+
+    <p>
+        Por isso, este projeto considera a importância da robustez contra manipulações visuais
+        e possíveis tentativas de evasão.
+    </p>
+</div>
+    </div>
+
+    <div class="highlight-card">
+        <div class="icon-soft">⚠️</div>
+        <h4>Por que isso importa?</h4>
+
+        <p>
+            Em sistemas que analisam imagens ou GIFs, modificações quase imperceptíveis
+            podem impactar a comparação visual e a confiabilidade dos resultados.
+        </p>
+
+        <p>
+            Por isso, este projeto considera a importância da robustez contra manipulações
+            visuais e possíveis tentativas de evasão.
+        </p>
+    </div>
+</section>
+<section class="section" id="simulacao">
+    <div class="section-header">
+        <h3>Simulação educativa</h3>
+        <p>
+            Esta área demonstra como pequenas alterações visuais podem impactar
+            a análise computacional de imagens.
+        </p>
+    </div>
+
+    <div class="highlight-card">
+        <h4>Teste de alteração visual</h4>
+
+        <p>
+            Você pode enviar um GIF e observar como mudanças simples podem influenciar
+            o resultado da análise.
+        </p>
+
+        <a href="#analise" class="btn">Testar na análise</a>
+    </div>
+</section>
         <section class="section" id="funcionamento">
             <div class="section-header">
                 <h3>Como o sistema funciona</h3>
@@ -274,6 +372,41 @@
         </section>
 
         <div class="footer-space"></div>
+   
+<section class="poisoning-section">
+
+    <div class="poisoning-card">
+
+        <h2>Laboratório de Pixel Poisoning</h2>
+
+        <p>
+            Esta simulação demonstra como pequenas alterações em pixels podem
+            modificar a representação perceptual de uma imagem.
+        </p>
+
+        <form
+            action="/simular-envenenamento"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <input
+                type="file"
+                name="imagem_poisoning"
+                accept="image/*"
+                required
+            >
+
+            <button type="submit">
+                Simular Envenenamento
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
     </main>
 
 </body>

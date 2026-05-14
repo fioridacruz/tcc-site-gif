@@ -1,9 +1,10 @@
 import json
 import sqlite3
 import uuid
+import random
 from pathlib import Path
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 from PIL import Image, ImageSequence
 import imagehash
 
@@ -75,6 +76,54 @@ def gerar_hashes_gif(caminho_gif):
             hashes.append(hash_frame)
 
     return hashes
+
+
+def aplicar_pixel_poisoning_simulado(caminho_original, caminho_saida):
+
+    imagem = Image.open(caminho_original).convert("RGB")
+    pixels = imagem.load()
+
+    largura, altura = imagem.size
+
+    quantidade_alteracoes = int((largura * altura) * 0.35)
+
+    for _ in range(quantidade_alteracoes):
+
+        x = random.randint(0, largura - 1)
+        y = random.randint(0, altura - 1)
+
+        r, g, b = pixels[x, y]
+
+        efeito = random.randint(1, 4)
+
+        # Ruído extremo
+        if efeito == 1:
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+
+        # Inversão de cores
+        elif efeito == 2:
+            r = 255 - r
+            g = 255 - g
+            b = 255 - b
+
+        # Clareamento exagerado
+        elif efeito == 3:
+            r = min(255, r + random.randint(80, 180))
+            g = min(255, g + random.randint(80, 180))
+            b = min(255, b + random.randint(80, 180))
+
+        # Escurecimento exagerado
+        else:
+            r = max(0, r - random.randint(80, 180))
+            g = max(0, g - random.randint(80, 180))
+            b = max(0, b - random.randint(80, 180))
+
+        pixels[x, y] = (r, g, b)
+
+    imagem.save(caminho_saida)
+
 
 
 def calcular_distancia_media(hashes_upload, hashes_base):
@@ -287,7 +336,57 @@ def historico():
         flash(f"Erro ao carregar histórico: {str(e)}")
         return redirect(url_for("index"))
 
+@app.route("/simular-envenenamento", methods=["POST"])
+def simular_envenenamento():
 
+    if "imagem_poisoning" not in request.files:
+        flash("Nenhuma imagem enviada.")
+        return redirect(url_for("index"))
+
+    arquivo = request.files["imagem_poisoning"]
+
+    if arquivo.filename == "":
+        flash("Selecione uma imagem.")
+        return redirect(url_for("index"))
+
+    nome_original = "original_poisoning.png"
+    nome_alterado = "poisoning_simulado.png"
+
+    caminho_original = UPLOAD_FOLDER / nome_original
+    caminho_alterado = UPLOAD_FOLDER / nome_alterado
+
+    arquivo.save(caminho_original)
+
+    aplicar_pixel_poisoning_simulado(caminho_original, caminho_alterado)
+
+    imagem_original = Image.open(caminho_original)
+    imagem_alterada = Image.open(caminho_alterado)
+
+    hash_original = imagehash.phash(imagem_original)
+    hash_alterado = imagehash.phash(imagem_alterada)
+
+    distancia_hamming = hash_original - hash_alterado
+
+    if distancia_hamming == 0:
+        impacto = "Baixo"
+    elif distancia_hamming <= 5:
+        impacto = "Moderado"
+    else:
+        impacto = "Alto"
+
+    return render_template(
+        "resultado_poisoning.html",
+        imagem_original=nome_original,
+        imagem_alterada=nome_alterado,
+        hash_original=str(hash_original),
+        hash_alterado=str(hash_alterado),
+        distancia=distancia_hamming,
+        impacto=impacto
+    )
+   
+@app.route("/uploads/<nome_arquivo>")
+def arquivo_upload(nome_arquivo):
+    return send_from_directory(UPLOAD_FOLDER, nome_arquivo)
 # =========================
 # EXECUÇÃO
 # =========================

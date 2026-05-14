@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Simulação</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <main class="resultado-poisoning-container">
+
+        <section class="resultado-poisoning-card">
+
+            <h1>Resultado da Simulação de Pixel Poisoning</h1>
+
+            <p>
+                A imagem foi modificada artificialmente para simular
+                alterações sutis em pixels.
+            </p>
+
+            <div class="comparacao-imagens">
+
+                <div>
+                    <h3>Imagem Original</h3>
+
+                    <img
+                        src="{{ url_for('arquivo_upload', nome_arquivo=imagem_original) }}"
+                    >
+                </div>
+
+                <div>
+                    <h3>Imagem Alterada</h3>
+
+                    <img
+                        src="{{ url_for('arquivo_upload', nome_arquivo=imagem_alterada) }}"
+                    >
+                </div>
+
+            </div>
+
+            <div class="metricas-poisoning">
+
+                <p>
+                    <strong>Hash original:</strong>
+                    {{ hash_original }}
+                </p>
+
+                <p>
+                    <strong>Hash alterado:</strong>
+                    {{ hash_alterado }}
+                </p>
+
+                <p>
+                    <strong>Distância de Hamming:</strong>
+                    {{ distancia }}
+                </p>
+
+                <p>
+                    <strong>Impacto estimado:</strong>
+                    {{ impacto }}
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('index') }}" class="botao-voltar">
+                Voltar
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
+
