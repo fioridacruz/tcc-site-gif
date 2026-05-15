@@ -28,77 +28,117 @@
 
     <main class="wrapper">
 
-        <section class="hero">
-            <div class="hero-grid">
-                <div class="hero-card">
-                    <div class="eyebrow">Plataforma acadêmica de análise automatizada</div>
+        <section class="hero scan-effect">
 
-                    <h2>
-                        Detecção de semelhança entre GIFs com apoio de
-                        hash perceptual e análise computacional
-                    </h2>
+    <section class="hero-section">
 
-                    <p>
-                        Este sistema foi desenvolvido como parte de um Trabalho de Conclusão de Curso na área de
-                        Segurança da Informação, com foco na triagem de arquivos GIF e identificação de conteúdos
-                        potencialmente suspeitos por meio de comparação técnica entre padrões visuais.
-                    </p>
+        <div class="hero-left">
 
-                    <div class="hero-actions">
-                        <a href="#analise" class="btn">Iniciar análise</a>
-                        <a href="#projeto" class="btn-secondary">Entender o projeto</a>
-                    </div>
+            <span class="hero-badge">
+                AI Threat Detection Platform
+            </span>
 
-                    <div class="hero-metrics">
-                        <div class="metric">
-                            <strong>Hash perceptual</strong>
-                            <span>Comparação baseada em características visuais dos frames</span>
-                        </div>
-                        <div class="metric">
-                            <strong>Triagem técnica</strong>
-                            <span>Apoio à classificação inicial de conteúdos enviados</span>
-                        </div>
-                        <div class="metric">
-                            <strong>Base estruturada</strong>
-                            <span>Cadastro de referências para uso comparativo no sistema</span>
-                        </div>
-                    </div>
+            <h1>
+                Inteligência Artificial aplicada à
+                triagem e análise perceptual de GIFs
+            </h1>
+
+            <p>
+                Plataforma experimental desenvolvida para apoiar processos
+                de identificação de conteúdos suspeitos utilizando hashing
+                perceptual, comparação computacional e análise automatizada.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#analisar" class="primary-btn">
+                    Iniciar análise
+                </a>
+
+                <a href="#funcionamento" class="secondary-btn">
+                    Ver funcionamento
+                </a>
+
+            </div>
+
+            <div class="hero-stats">
+
+                <div class="stat-card">
+                    <h3>1.284</h3>
+                    <span>Arquivos analisados</span>
                 </div>
 
-                <aside class="panel-card">
-                    <div class="panel-head">
-                        <h3>Visão geral do TCC</h3>
-                        <p>
-                            A proposta central do sistema é auxiliar processos de identificação de conteúdos
-                            suspeitos, tornando a análise inicial mais organizada, objetiva e tecnologicamente apoiada.
-                        </p>
-                    </div>
+                <div class="stat-card">
+                    <h3>94%</h3>
+                    <span>Precisão estimada</span>
+                </div>
 
-                    <div class="mini-stack">
-                        <div class="mini-item">
-                            <strong>Problema abordado</strong>
-                            <span>
-                                Dificuldade de triagem manual de arquivos animados e necessidade de apoio automatizado.
-                            </span>
-                        </div>
+                <div class="stat-card">
+                    <h3>256</h3>
+                    <span>Hashes cadastrados</span>
+                </div>
 
-                        <div class="mini-item">
-                            <strong>Tecnologia aplicada</strong>
-                            <span>
-                                Processamento de frames, geração de hash e comparação de similaridade.
-                            </span>
-                        </div>
-
-                        <div class="mini-item">
-                            <strong>Objetivo acadêmico</strong>
-                            <span>
-                                Demonstrar como técnicas computacionais podem apoiar mecanismos de detecção e análise.
-                            </span>
-                        </div>
-                    </div>
-                </aside>
             </div>
-        </section>
+
+        </div>
+
+        <div class="hero-right">
+
+            <div class="terminal-card">
+
+                <div class="terminal-top">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="terminal-content">
+
+                    <p>> Inicializando análise perceptual...</p>
+                    <p>> Extraindo frames do GIF...</p>
+                    <p>> Gerando assinaturas hash...</p>
+                    <p>> Comparando padrões visuais...</p>
+
+                    <p class="success">
+                        > Similaridade detectada com sucesso
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</section>
+
+<section class="cyber-dashboard">
+
+    <div class="dashboard-card online">
+        <span class="dashboard-dot"></span>
+        <div>
+            <strong>AI Engine Online</strong>
+            <p>Motor de análise operacional</p>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <strong>1.284</strong>
+        <p>GIFs analisados</p>
+    </div>
+
+    <div class="dashboard-card">
+        <strong>256</strong>
+        <p>Hashes cadastrados</p>
+    </div>
+
+    <div class="dashboard-card">
+        <strong>Ativo</strong>
+        <p>Modo de triagem</p>
+    </div>
+
+</section>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -375,7 +415,7 @@
                         perceptual e a comparação com os registros existentes na base.
                     </p>
 
-                    <form action="{{ url_for('analisar') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ url_for('analisar') }}" method="POST" enctype="multipart/form-data" class="analysis-form">
                         <div class="field-group">
                             <label for="gif">Selecionar GIF para análise</label>
                             <input
@@ -402,6 +442,64 @@
 
 
     </main>
+<div id="ai-loading" class="ai-loading">
+    <div class="ai-loading-card">
+        <div class="ai-spinner"></div>
+
+        <h2>Processamento de IA em andamento</h2>
+
+        <div class="ai-terminal">
+            <p>Inicializando motor de análise...</p>
+            <p>Extraindo frames do GIF...</p>
+            <p>Gerando assinaturas perceptuais...</p>
+            <p>Comparando padrões visuais...</p>
+            <p>Finalizando classificação...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+   const analysisForm = document.querySelector(".analysis-form");
+const loadingScreen = document.getElementById("ai-loading");
+
+if (analysisForm) {
+    analysisForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        loadingScreen.classList.add("active");
+
+        setTimeout(function () {
+            analysisForm.submit();
+        }, 2500);
+
+    });
+}
+</script>
+
+<script>
+    const revealElements = document.querySelectorAll(
+        "section, .dashboard-card, .flow-card, .module-card, .result-box"
+    );
+
+    revealElements.forEach((element) => {
+        element.classList.add("reveal");
+    });
+
+    function revealOnScroll() {
+        revealElements.forEach((element) => {
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementTop < windowHeight - 80) {
+                element.classList.add("active");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", revealOnScroll);
+    window.addEventListener("load", revealOnScroll);
+</script>
 
 </body>
 </html>
